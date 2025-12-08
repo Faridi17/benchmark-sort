@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request
 import mysql.connector
 import subprocess
 import json
-import os
+import time
 import csv
 
 app = Flask(__name__)
@@ -17,7 +17,7 @@ def get_mysql_connection():
 
 CPP_RADIX_EXECUTABLE = './bin/radix-sort'
 CPP_MERGE_EXECUTABLE = './bin/merge-sort'
-CPP_RADIX_MERGE_EXECUTABLE = "./bin/radix-merge-sort"
+CPP_QUICK_EXECUTABLE = "./bin/quick-sort"
 DATA_CSV = './data/customer_shopping_data.csv'
 
 @app.route('/')
@@ -48,8 +48,8 @@ def cpp_sort():
         exe = CPP_RADIX_EXECUTABLE
     elif algo == "MERGE":
         exe = CPP_MERGE_EXECUTABLE
-    elif algo == "RADIX MERGE":
-        exe = CPP_RADIX_MERGE_EXECUTABLE
+    elif algo == "QUICK":
+        exe = CPP_QUICK_EXECUTABLE
     else:
         return jsonify({"status": "error", "message": "Unknown algo"}), 400
 
@@ -95,19 +95,25 @@ def mysql_sort():
         }), 400
 
     try:
+
         conn = get_mysql_connection()
         cursor = conn.cursor(dictionary=True)
+        
+        start = time.time()  # mulai hitung durasi
 
         query = f"SELECT * FROM customers ORDER BY {sort_field} ASC"
         cursor.execute(query)
         rows = cursor.fetchall()
 
+        duration = (time.time() - start) * 1000
+        
         cursor.close()
         conn.close()
 
+
         return jsonify({
             "status": "success",
-            "count": len(rows),
+            "duration": int(duration),
             "data": rows
         })
 
