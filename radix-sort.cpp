@@ -21,12 +21,7 @@ struct CustomerData {
 
 // --- Global Variables ---
 int length = 0;
-<<<<<<< Updated upstream:radix-sort.cpp
-const int numThreads = 4;
-// std::thread::hardware_concurrency()
-=======
 const int numThreads = std::thread::hardware_concurrency();
->>>>>>> Stashed changes:radix-csv.cpp
 
 std::string csv_header = "";
 
