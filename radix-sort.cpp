@@ -21,16 +21,20 @@ struct CustomerData {
 
 // --- Global Variables ---
 int length = 0;
+<<<<<<< Updated upstream:radix-sort.cpp
 const int numThreads = 4;
 // std::thread::hardware_concurrency()
+=======
+const int numThreads = std::thread::hardware_concurrency();
+>>>>>>> Stashed changes:radix-csv.cpp
 
 std::string csv_header = "";
 
 std::vector<CustomerData> data_customers;
 std::vector<CustomerData> buffer;
 
-int global_counts[numThreads][10];
-int global_starts[10][numThreads];
+std::vector<std::vector<int>> global_counts;
+std::vector<std::vector<int>> global_starts;
 
 // --- CyclicBarrier ---
 class CyclicBarrier {
@@ -178,6 +182,12 @@ void threadWorker(int myID, CyclicBarrier &barrier, long long maxVal)
 // --- MAIN ---
 int main(int argc, char* argv[])
 {
+    // Siapkan global_counts: [numThreads][10], isi 0
+    global_counts.assign(numThreads, std::vector<int>(10, 0));
+    
+    // Siapkan global_starts: [10][numThreads], isi 0
+    global_starts.assign(10, std::vector<int>(numThreads, 0));
+
     if (argc < 2) {
         std::cerr << "ERROR: missing sort field\n";
         return 1;
